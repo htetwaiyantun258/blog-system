@@ -1,12 +1,28 @@
 <?php
 session_start();
 require "../config/config.php";
+require "../config/common.php";
+
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 if (empty($_SESSION['user_id'] && $_SESSION['logged_in'])) {
     header('Location: login.php');
 }
+if($_SESSION['role'] != 1){
+    header('Location: login.php');
+  }
 
-if ($_POST) {
+if ($_POST) { 
+    if(empty($_POST['title']) || empty($_POST['description']) ){
+
+        if(empty($_POST['title'])){
+          $titleError = "Title cannot be null";
+        }
+        if(empty($_POST['description'])){
+          $descError = "Description cannot be null";
+        }
+       
+    
+    }else{
     $id = $_POST['id'];
     $title = $_POST['title'];
     $desc = $_POST['description'];
@@ -39,26 +55,28 @@ if ($_POST) {
         }
     }
 }
+}
 
-$stmt = $pdo->prepare("SELECT * FROM post WHERE id=".$_GET['id']);
-$stmt->execute();
-$result = $stmt->fetchAll();
+    $stmt = $pdo->prepare("SELECT * FROM post WHERE id=".$_GET['id']);
+    $stmt->execute();
+    $result = $stmt->fetchAll();
 
 ?>
 
-<?php require "header.html"?>
+<?php require "header.php"?>
     <div class="card">
         <div class="card-body">
             <h1>Create New Todo</h1>
             <form enctype="multipart/form-data" action="" method="post" >
+            <input type="hidden" name="_token" value="<?php echo $_SESSION['_token']?>">
                 <input type="hidden" name="id" value="<?php echo $result[0]['id'] ?>">
                 <div class="form-group">
-                    <label for="title">Title</label>
-                    <input type="text" class="form-control" name="title" value="<?php echo $result[0]['title']; ?>">
+                    <label for="title">Title</label><p style="color:red"><?php echo empty($titleError) ? '': "***".$titleError ?></p>
+                    <input type="text" class="form-control" name="title" value="<?php echo escape($result[0]['title']) ?>">
                 </div>
                 <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea name="description" class="form-control"   cols="80" rows="8"><?php echo $result[0]['description']; ?></textarea>
+                    <label for="description">Description</label><p style="color:red"><?php echo empty($descError) ? '': "***".$descError ?></p>
+                    <textarea name="description" class="form-control"   cols="80" rows="8"><?php echo escape($result[0]['description']) ?></textarea>
                 </div>
                 <div class="form-group">
                     <label for="file">Select file to upload :</label><br />
@@ -73,6 +91,5 @@ $result = $stmt->fetchAll();
         </div>
     </div>
 
-
-    <?php require "footer.html"?>
+<?php require "footer.html"?>
 

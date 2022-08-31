@@ -15,6 +15,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="../dist/css/adminlte.min.css">
+  <link href="../dist/css/custom.css">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 </head>
@@ -30,9 +31,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
       </li>
     </ul>
 
+   <?php
+       $link = $_SERVER['PHP_SELF'];
+       $link_array = explode('/',$link);
+       $page = end($link_array);
+   ?>
+
+
     <!-- SEARCH FORM -->
-    <form class="form-inline ml-3 " method="post" action="index.php">
+    <form class="form-inline ml-3 " method="post" action="<?php echo $page == 'index.php' ? 'index.php' : 'userlist.php' ?>">
       <div class="input-group input-group-sm">
+      <input type="hidden" name="_token" value="<?php echo $_SESSION['_token']?>">
         <input name="search" class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
         <div class="input-group-append">
           <button class="btn btn-navbar" type="submit">
@@ -69,7 +78,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <img src="../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block"><?php echo $_SESSION['user_name'] ?></a>
+          <a href="#" class="d-block"> <?php echo $_SESSION['user_name'] ?></a>
         </div>
       </div>
 
@@ -82,11 +91,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <!-- slid menu li delete -->
 
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="index.php" class="nav-link btn btn-success" >
               <i class="nav-icon fas fa-th"></i>
-              <p>
+              <p style="text-align: center;">
                 Blog
               </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="userlist.php" class="nav-link btn btn-primary">User
+              <!-- <i class="nav-icon fas fa-th"></i> -->
+              <!-- <button class="btn btn-primary">User</button> -->
             </a>
           </li>
         </ul>

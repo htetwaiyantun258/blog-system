@@ -6,6 +6,7 @@ require "../config/common.php";
 if(empty($_SESSION['user_id'] && $_SESSION['logged_in'])){
   header('Location: login.php');
 }
+
 if($_SESSION['role'] != 1){
   header('Location: login.php');
 }
@@ -29,7 +30,7 @@ if(isset($_POST['search'])){
         <div class="col-md-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Bordered Table</h3>
+                <h3 class="card-title">User List</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -40,40 +41,41 @@ if(isset($_POST['search'])){
                 }else{ 
                   $pageno = 1;
                 }
-                $numOfRec = 3;
+                $numOfRec = 5;
                 $offset = ($pageno - 1) * $numOfRec;
 
-                if(empty($_POST['search']) && empty($_COOKIE['search'])){
-                $stmt = $pdo->prepare("SELECT * FROM post ORDER BY id DESC");
+               if(empty($_POST['search']) && empty($_COOKIE['search'])){
+                $stmt = $pdo->prepare("SELECT * FROM users ORDER BY id DESC");
                 $stmt->execute();
                 $rawResult = $stmt->fetchAll();
                 $total_pages = ceil(count($rawResult) / $numOfRec);
                 
-                $stmt = $pdo->prepare("SELECT * FROM post ORDER BY id DESC limit $offset,$numOfRec");
+                $stmt = $pdo->prepare("SELECT * FROM users ORDER BY id DESC limit $offset,$numOfRec");
                 $stmt->execute();
                 $result = $stmt->fetchAll();
 
                }else{ 
                 $searchKey = isset($_POST['search']) ? $_POST['search'] : $_COOKIE['search'];
-                $stmt = $pdo->prepare("SELECT * FROM post WHERE title LIKE '%$searchKey%' ORDER BY id DESC");
+                $stmt = $pdo->prepare("SELECT * FROM users WHERE name LIKE '%$searchKey%' ORDER BY id DESC");
                 $stmt->execute();
                 $rawResult = $stmt->fetchAll();
                 $total_pages = ceil(count($rawResult) / $numOfRec);
                 
-                $stmt = $pdo->prepare("SELECT * FROM post WHERE title LIKE '%$searchKey%' ORDER BY id DESC limit $offset,$numOfRec");
+                $stmt = $pdo->prepare("SELECT * FROM users WHERE name LIKE '%$searchKey%' ORDER BY id DESC limit $offset,$numOfRec");
                 $stmt->execute();
                 $result = $stmt->fetchAll();
                }
                  ?>
                 <div>
-                  <a href="add.php" type="button" class="btn btn-primary ">Create New</a>
+                  <a href="user-create.php" type="button" class="btn btn-primary ">Create User</a>
                 </div><br>
                 <table class="table table-bordered">
                   <thead>                  
                     <tr>
                       <th style="width: 10px">#</th>
-                      <th>Title</th>
-                      <th>Content</th>
+                      <th>User Name</th>
+                      <th>Email</th>
+                      <th>Role</th>
                       <th style="width: 40px">Action</th>
                     </tr>
                   </thead>
@@ -85,15 +87,17 @@ if(isset($_POST['search'])){
                     ?>
                     <tr>
                         <td><?php echo $i;?></td>
-                        <td><?php echo escape($value['title']) ?></td>
-                        <td><?php echo escape(substr($value['description'],0,80)); ?></td>       
+                        <td><?php echo escape($value['name']) ?></td>
+                        <td><?php echo escape($value['email']) ?></td>  
+                        <td><?php  echo $value['role'] == 1 ? 'admin': 'user' ?></td>       
+
                         <td>
                         <div class="btn-group">
                         <div class="container">
-                        <a href="edit.php?id=<?php echo $value['id'] ?>" type="button" class="btn btn-warning">Edit</a>
+                        <a href="user-edit.php?id=<?php echo $value['id'] ?>" type="button" class="btn btn-warning">Edit</a>
                         </div>
                         <div class="container">
-                        <a href="delete.php?id=<?php echo $value['id'] ?>" onclick="return confirm('Are you sure you want to delete')" type="button" class="btn btn-danger">Delete</a>
+                        <a href="user-delete.php?id=<?php echo $value['id'] ?>" onclick="return confirm('Are you sure you want to delete')" type="button" class="btn btn-danger">Delete</a>
                         </div>
                         </div>
                       </td>
